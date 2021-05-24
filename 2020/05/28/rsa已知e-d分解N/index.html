@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript" src="love.js"></script>
+</head>
+<head>
+  <meta charset="utf-8">
+  <title>rsa已知e*d分解N | 人生若只如初见</title>
+  <meta name="keywords" content="">
+  <meta name="description" content="rsa已知e*d分解N | 人生若只如初见">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="RSA的基本内容(如果对RSA很了解的话，可以跳过这部分）RSA的常用参数：p,q,n,e,d,phi,c,m p,q为两个大素数 n&#x3D;p*q e*d ≡1 (mod n) c&#x3D;m^e mod n 和 m&#x3D;c^d mod n ，c和m分别代表密文与明文RSA签名 1234 1、RSA签名使用与加密相同的方式，不过参数交换，使用私钥签发，公钥接收(原因：加密是为了防止中间人获取你的内容，签名是为了让">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RSA-crt签名问题">
+<meta property="og:url" content="http://yoursite.com/2021/05/24/RSA-crt%E7%AD%BE%E5%90%8D%E9%97%AE%E9%A2%98/index.html">
+<meta property="og:site_name" content="人生若只如初见">
+<meta property="og:description" content="RSA的基本内容(如果对RSA很了解的话，可以跳过这部分）RSA的常用参数：p,q,n,e,d,phi,c,m p,q为两个大素数 n&#x3D;p*q e*d ≡1 (mod n) c&#x3D;m^e mod n 和 m&#x3D;c^d mod n ，c和m分别代表密文与明文RSA签名 1234 1、RSA签名使用与加密相同的方式，不过参数交换，使用私钥签发，公钥接收(原因：加密是为了防止中间人获取你的内容，签名是为了让">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://p4.ssl.qhimg.com/t012431e5c937143505.png">
+<meta property="og:image" content="https://p0.ssl.qhimg.com/t012963a47a80f4cbac.png">
+<meta property="og:image" content="https://p5.ssl.qhimg.com/t0166c3f22bd3cb65e7.png">
+<meta property="article:published_time" content="2021-05-24T04:02:00.000Z">
+<meta property="article:modified_time" content="2021-05-24T04:15:49.573Z">
+<meta property="article:author" content="人生若只如初见">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://p4.ssl.qhimg.com/t012431e5c937143505.png">
+
+
+<link rel="icon" href="/img/avatar.jpg">
+
+<link href="/css/style.css?v=1.1.0" rel="stylesheet">
+
+<link href="/css/hl_theme/atom-light.css?v=1.1.0" rel="stylesheet">
+
+<link href="//cdn.jsdelivr.net/npm/animate.css@4.1.0/animate.min.css" rel="stylesheet">
+
+<script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script src="/js/titleTip.js?v=1.1.0" ></script>
+
+<script src="//cdn.jsdelivr.net/npm/highlightjs@9.16.2/highlight.pack.min.js"></script>
+<script>
+    hljs.initHighlightingOnLoad();
+</script>
+
+<script src="//cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js"></script>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/jquery.cookie@1.4.1/jquery.cookie.min.js" ></script>
+
+<script src="/js/iconfont.js?v=1.1.0" ></script>
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+<div style="display: none">
+  <input class="theme_disqus_on" value="false">
+  <input class="theme_preload_comment" value="">
+  <input class="theme_blog_path" value="">
+  <input id="theme_shortcut" value="true" />
+</div>
+
+
+<body>
+<aside class="nav">
+    <div class="nav-left">
+        <a href="/" class="avatar_target">
+    <img class="avatar" src="/img/avatar.jpg" />
+</a>
+<div class="author">
+    <span>人生若只如初见</span>
+</div>
+
+<div class="icon">
+    
+        
+    
+        
+        <a title="github" href="https://github.com/weichujian" target="_blank">
+            
+                <svg class="iconfont-svg" aria-hidden="true">
+                    <use xlink:href="#icon-github"></use>
+                </svg>
+            
+        </a>
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+        <a title="csdn" href="https://blog.csdn.net/weixin_44159598" target="_blank">
+            
+                <svg class="iconfont-svg" aria-hidden="true">
+                    <use xlink:href="#icon-csdn"></use>
+                </svg>
+            
+        </a>
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+</div>
+
+
+
+
+<ul>
+    <li><div class="all active" data-rel="All">All<small>(20)</small></div></li>
+    
+        
+            
+            <li><div data-rel="ctf">ctf<small>(2)</small></div>
+                
+            </li>
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+            <li><div data-rel="密码学"><i class="fold iconfont icon-right"></i>密码学<small>(18)</small></div>
+                
+                    <ul class="sub hide">
+                        
+                        <li><div data-rel="ECC">ECC<small>(1)</small></div>
+                            
+                        </li>
+                            
+                        <li><div data-rel="rsa">rsa<small>(8)</small></div>
+                            
+                        </li>
+                            
+                        <li><div data-rel="填充方式">填充方式<small>(1)</small></div>
+                            
+                        </li>
+                            
+                        <li><div data-rel="算法">算法<small>(1)</small></div>
+                            
+                        </li>
+                            
+                        <li><div data-rel="编码">编码<small>(4)</small></div>
+                            
+                        </li>
+                            
+                        <li><div data-rel="随机数">随机数<small>(1)</small></div>
+                            
+                        </li>
+                            
+                    </ul>
+                
+            </li>
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+</ul>
+<div class="left-bottom">
+    <div class="menus">
+    
+    
+    
+    </div>
+    <div><a class="about  hasFriend  site_url"  href="/about">About</a><a style="width: 50%"  class="friends">Friends</a></div>
+</div>
+<input type="hidden" id="yelog_site_posts_number" value="20">
+
+<div style="display: none">
+    <span id="busuanzi_value_site_uv"></span>
+    <span id="busuanzi_value_site_pv"></span>
+</div>
+
+    </div>
+    <div class="nav-right">
+        <div class="friends-area">
+    <div class="friends-title">
+        Links
+        <i class="iconfont icon-left"></i>
+    </div>
+    <div class="friends-content">
+        <ul>
+            
+            <li><a target="_blank" href="http://yelog.org/">叶落阁</a></li>
+            
+            <li><a target="_blank" href="https://r0co.top/">r0co</a></li>
+            
+            <li><a target="_blank" href="http://www.stao.site">stao</a></li>
+            
+        </ul>
+    </div>
+</div>
+        <div class="title-list">
+    <div class="right-top">
+        <div id="default-panel">
+            <i class="iconfont icon-search" data-title="搜索 快捷键 i"></i>
+            <div class="right-title">All</div>
+            <i class="iconfont icon-file-tree" data-title="切换到大纲视图 快捷键 w"></i>
+        </div>
+        <div id="search-panel">
+            <i class="iconfont icon-left" data-title="返回"></i>
+            <input id="local-search-input" />
+            <label class="border-line" for="input"></label>
+            <i class="iconfont icon-case-sensitive" data-title="大小写敏感"></i>
+            <i class="iconfont icon-tag" data-title="标签"></i>
+        </div>
+        <div id="outline-panel" style="display: none">
+            <div class="right-title">大纲</div>
+            <i class="iconfont icon-list" data-title="切换到文章列表"></i>
+        </div>
+    </div>
+
+    <div class="tags-list">
+    <input id="tag-search" />
+    <div class="tag-wrapper">
+        
+    </div>
+
+</div>
+
+    
+    <nav id="title-list-nav">
+        
+        <a  class="All 密码学 rsa "
+           href="/2021/05/24/RSA-crt%E7%AD%BE%E5%90%8D%E9%97%AE%E9%A2%98/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="RSA-crt签名问题">RSA-crt签名问题</span>
+            <span class="post-date" title="2021-05-24 12:02:00">2021/05/24</span>
+        </a>
+        
+        <a  class="All 密码学 "
+           href="/2021/05/24/python%E5%AE%9E%E7%8E%B0des%E4%B8%8ERSA/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="python实现des与RSA">python实现des与RSA</span>
+            <span class="post-date" title="2021-05-24 11:50:00">2021/05/24</span>
+        </a>
+        
+        <a  class="All 密码学 "
+           href="/2021/03/17/rc4%E7%AC%94%E8%AE%B0/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="rc4笔记">rc4笔记</span>
+            <span class="post-date" title="2021-03-17 16:00:00">2021/03/17</span>
+        </a>
+        
+        <a  class="All 密码学 填充方式 "
+           href="/2020/09/24/%E5%88%86%E7%BB%84%E5%8A%A0%E5%AF%86%E7%9A%84padding/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="分组加密的padding">分组加密的padding</span>
+            <span class="post-date" title="2020-09-24 19:55:00">2020/09/24</span>
+        </a>
+        
+        <a  class="All 密码学 rsa "
+           href="/2020/09/06/RsaLSBOrcalePadding/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="RsaLsbOrcalePadding">RsaLsbOrcalePadding</span>
+            <span class="post-date" title="2020-09-06 09:23:00">2020/09/06</span>
+        </a>
+        
+        <a  class="All ctf "
+           href="/2020/06/24/%E7%BD%91%E9%BC%8E%E6%9D%AF2020%E9%9D%92%E9%BE%99%E7%BB%84crypto/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="网鼎杯2020青龙组crypto">网鼎杯2020青龙组crypto</span>
+            <span class="post-date" title="2020-06-24 09:06:00">2020/06/24</span>
+        </a>
+        
+        <a  class="All 密码学 rsa "
+           href="/2020/06/23/rsa%E5%BD%93e-2%E4%B8%94%E4%B8%8D%E4%BA%92%E7%B4%A0%E6%97%B6%E5%A4%84%E7%90%86%E6%96%B9%E5%BC%8F/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="rsa当e=2且不互素时处理方式">rsa当e=2且不互素时处理方式</span>
+            <span class="post-date" title="2020-06-23 18:10:00">2020/06/23</span>
+        </a>
+        
+        <a  class="All 密码学 rsa "
+           href="/2020/06/01/%E5%B0%86CRT-%E4%B8%AD%E5%9B%BD%E5%89%A9%E4%BD%99%E5%AE%9A%E7%90%86-%E4%B8%8ERSA%E7%BB%93%E5%90%88/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="将CRT(中国剩余定理)与RSA结合">将CRT(中国剩余定理)与RSA结合</span>
+            <span class="post-date" title="2020-06-01 09:00:00">2020/06/01</span>
+        </a>
+        
+        <a  class="All ctf "
+           href="/2020/05/29/MRctf2020%E5%AF%86%E7%A0%81/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="MRctf2020密码">MRctf2020密码</span>
+            <span class="post-date" title="2020-05-29 11:35:00">2020/05/29</span>
+        </a>
+        
+        <a  class="All 密码学 rsa "
+           href="/2020/05/28/rsa-Factor-Attack-%E5%8F%8A%E5%B8%B8%E7%94%A8%E8%84%9A%E6%9C%AC/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="RSA  Factor Attack 及常用脚本">RSA  Factor Attack 及常用脚本</span>
+            <span class="post-date" title="2020-05-28 22:31:00">2020/05/28</span>
+        </a>
+        
+        <a  class="All 密码学 算法 "
+           href="/2020/05/28/%E7%BA%A2%E9%BB%91%E6%A0%91%E7%9A%84%E5%88%A0%E9%99%A4%E5%92%8C%E5%8F%98%E8%89%B2/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="红黑树的删除和变色">红黑树的删除和变色</span>
+            <span class="post-date" title="2020-05-28 19:02:00">2020/05/28</span>
+        </a>
+        
+        <a  class="All 密码学 rsa "
+           href="/2020/05/28/rsa%E5%B7%B2%E7%9F%A5e-d%E5%88%86%E8%A7%A3N/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="rsa已知e*d分解N">rsa已知e*d分解N</span>
+            <span class="post-date" title="2020-05-28 18:30:00">2020/05/28</span>
+        </a>
+        
+        <a  class="All 密码学 随机数 "
+           href="/2020/05/28/lcg%E7%BA%BF%E6%80%A7%E5%90%8C%E4%BD%99%E9%9A%8F%E6%9C%BA%E6%95%B0%E7%94%9F%E6%88%90%E5%99%A8/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="lcg线性同余随机数生成器">lcg线性同余随机数生成器</span>
+            <span class="post-date" title="2020-05-28 09:49:00">2020/05/28</span>
+        </a>
+        
+        <a  class="All 密码学 ECC "
+           href="/2020/05/27/Ecc%E6%A4%AD%E5%9C%86%E6%9B%B2%E7%BA%BF%E5%9F%BA%E7%A1%80/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="Ecc椭圆曲线基础">Ecc椭圆曲线基础</span>
+            <span class="post-date" title="2020-05-27 18:16:00">2020/05/27</span>
+        </a>
+        
+        <a  class="All 密码学 编码 "
+           href="/2020/05/27/Unicode%E7%BC%96%E7%A0%81%E8%A1%8D%E7%94%9F%E5%87%BA%E7%9A%84%E7%BC%96%E7%A0%81%E6%96%B9%E6%A1%88/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="Unicode编码衍生出的编码方案">Unicode编码衍生出的编码方案</span>
+            <span class="post-date" title="2020-05-27 18:11:00">2020/05/27</span>
+        </a>
+        
+        <a  class="All 密码学 编码 "
+           href="/2020/05/27/%E5%AF%86%E7%A0%81%E5%AD%A6%E7%BC%96%E7%A0%81-%E4%B8%89-Unicode%E7%BC%96%E7%A0%81/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="密码学编码(三)Unicode编码">密码学编码(三)Unicode编码</span>
+            <span class="post-date" title="2020-05-27 18:01:00">2020/05/27</span>
+        </a>
+        
+        <a  class="All 密码学 编码 "
+           href="/2020/05/27/%E5%AF%86%E7%A0%81%E5%AD%A6%E7%BC%96%E7%A0%81-%E4%B8%80-ASCII%E7%BC%96%E7%A0%81/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="密码学编码(一)ASCII编码">密码学编码(一)ASCII编码</span>
+            <span class="post-date" title="2020-05-27 17:56:00">2020/05/27</span>
+        </a>
+        
+        <a  class="All 密码学 编码 "
+           href="/2020/05/27/%E5%AF%86%E7%A0%81%E5%AD%A6%E7%BC%96%E7%A0%81-%E4%BA%8C-base%E7%BC%96%E7%A0%81/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="密码学编码(二)base编码">密码学编码(二)base编码</span>
+            <span class="post-date" title="2020-05-27 15:23:00">2020/05/27</span>
+        </a>
+        
+        <a  class="All 密码学 rsa "
+           href="/2020/05/27/rsa%E5%B7%B2%E7%9F%A5%E9%AB%98%E4%BD%8D%E6%94%BB%E5%87%BB1/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="rsa已知高位攻击">rsa已知高位攻击</span>
+            <span class="post-date" title="2020-05-27 11:54:00">2020/05/27</span>
+        </a>
+        
+        <a  class="All 密码学 rsa "
+           href="/2020/05/27/rsa%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0-1/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="rsa基础学习">rsa基础学习</span>
+            <span class="post-date" title="2020-05-27 11:46:00">2020/05/27</span>
+        </a>
+        
+        <div id="no-item-tips">
+
+        </div>
+    </nav>
+    <div id="outline-list">
+    </div>
+</div>
+    </div>
+    <div class="hide-list">
+        <div class="semicircle" data-title="切换全屏 快捷键 s">
+            <div class="brackets first"><</div>
+            <div class="brackets">&gt;</div>
+        </div>
+    </div>
+</aside>
+<div id="post">
+    <div class="pjax">
+        <article id="post-rsa已知e-d分解N" class="article article-type-post" itemscope itemprop="blogPost">
+    
+        <h1 class="article-title">rsa已知e*d分解N</h1>
+    
+    <div class="article-meta">
+        
+        
+        
+        <span class="book">
+            <i class="iconfont icon-category"></i>
+            
+            <a  data-rel="密码学">密码学</a> > 
+            
+            <a  data-rel="rsa">rsa</a>
+            
+        </span>
+        
+        
+    </div>
+    <div class="article-meta">
+        
+            Created At : <time class="date" title='Updated At: 2020-05-28 18:44:58'>2020-05-28 18:30</time>
+        
+    </div>
+    <div class="article-meta">
+        
+        
+        <span id="busuanzi_container_page_pv">
+            Views 👀 :<span id="busuanzi_value_page_pv">
+                <span class="count-comment">
+                    <span class="spinner">
+                      <div class="cube1"></div>
+                      <div class="cube2"></div>
+                    </span>
+                </span>
+            </span>
+        </span>
+        
+        
+    </div>
+    
+    <div class="toc-ref">
+    
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#基本特征"><span class="toc-text">基本特征</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#简述"><span class="toc-text">简述</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#定理"><span class="toc-text">定理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#范围"><span class="toc-text">范围</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#例题"><span class="toc-text">例题</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#总结："><span class="toc-text">总结：</span></a></li></ol>
+    
+<style>
+    .left-col .switch-btn,
+    .left-col .switch-area {
+        display: none;
+    }
+    .toc-level-3 i,
+    .toc-level-3 ol {
+        display: none !important;
+    }
+</style>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="基本特征"><a href="#基本特征" class="headerlink" title="基本特征"></a>基本特征</h1><ul>
+<li><p>前面说过RSA的基本参数，我们知道e<em>d≡1 mod (p-1)</em>(q-1).</p>
+</li>
+<li><p>这个题型是说，当我们从题目中得到e*d和N的值时，如何通过分解N来解密ｒｓａ</p>
+<h1 id="简述"><a href="#简述" class="headerlink" title="简述"></a>简述</h1></li>
+<li><p>输入e,d</p>
+</li>
+<li><p>e,d都是奇数，因为它们相对于(p-1)*(q-1)都是素数</p>
+</li>
+<li><p>通过建立e*d=1 mod Φ(N)</p>
+</li>
+<li><p>让e*d-1=2^k * r(r 是奇数)</p>
+</li>
+<li><p>让(1&lt;b&lt;N)，从中随机挑选b</p>
+</li>
+<li><p>如果gcd(b,N)&gt;1,我们就停止</p>
+</li>
+<li><p>否则 b∈ZN<em>, 那么b^(e</em>d-1)=1 mod N</p>
+</li>
+<li><p>让e<em>d-1=2^k  *r  当r是奇数，b^(e</em>d-1)=1 mod N ,求mod N\</p>
+</li>
+<li><p>a0 = b^r, a1 = (a0)^2, a2 = (a1)^2,…, ak = (ak-1)^2.</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1.我们知道ak&#x3D;1  让j是aj &#x3D;1mod  N 的最小指数</span><br><span class="line">2. 如果0&lt;j并且a(j-1) 不等于N-1那么a(j-1)是关于1mod  N 的一个非平凡根</span><br></pre></td></tr></table></figure>
+
+<h2 id="定理"><a href="#定理" class="headerlink" title="定理"></a>定理</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">至少有一半的b，1&lt;b&lt;N，满足是1 mod N 的一个非平凡根</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">证明过程：</span><br><span class="line">如果x^2&#x3D;1 mod N 并且 x不等于1，N-1 那么gcd(x+1,N)&gt;0</span><br><span class="line"></span><br><span class="line">证明过程：x^2 -1 &#x3D;(x+1)*(x-1) .      N除以乘积，但是x不等于N-1,1.</span><br><span class="line">	    因此N不能除以(x-1)或者(x+1)</span><br><span class="line">	    所以p必须除以其中一个,q除以另外一个</span><br></pre></td></tr></table></figure>
+
+<h2 id="范围"><a href="#范围" class="headerlink" title="范围"></a>范围</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">输入d,e,N,随机选择b</span><br><span class="line">让e*d-1&#x3D;2^k *r (r是奇数)，b^(e*d-1)&#x3D;1 mod N</span><br><span class="line">求mod N</span><br><span class="line">a0 &#x3D; b^r, a1 &#x3D; (a0)^2, a2 &#x3D; (a1)^2,…, ak &#x3D; (ak-1)^2.</span><br><span class="line">由定理可知，对于概率大于 0.5，aj中的一个是1模N的非平凡平方根，这样的根产生N的因式分解</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">所有的操作都是在log N内</span><br></pre></td></tr></table></figure>
+
+<h1 id="例题"><a href="#例题" class="headerlink" title="例题"></a>例题</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">N&#x3D;2773   e&#x3D;17   d&#x3D;157</span><br><span class="line"></span><br><span class="line">计算过程:</span><br><span class="line">e*d-1&#x3D;2668&#x3D;2^2  *667</span><br><span class="line">随机挑选b，进行mod 2773的操作</span><br><span class="line">b&#x3D;7   7^667&#x3D;1 mod N        不好</span><br><span class="line"> b&#x3D;8   8^667&#x3D;471 mod N, 并且 471^2&#x3D;1 mod N,所以471是1 mod 2773的非平凡平方根</span><br><span class="line"></span><br><span class="line">Gcd(472,N)&#x3D;59          gcd(470,N)&#x3D;47</span><br><span class="line">2773&#x2F;&#x2F;59&#x3D;47</span><br></pre></td></tr></table></figure>
+
+<h1 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">1、设定k&#x3D;e*d-1</span><br><span class="line">2、从2到N-1的范围内随机选择一个数字g</span><br><span class="line">3、将k写成2^t  *r 的形式</span><br><span class="line">4、如果t能被2整除，那么t&#x3D;t&#x2F;2,并且x&#x3D;g^t mod N ,直到x&gt;1</span><br><span class="line">5、在满足x&gt;1的情况下，如果y&#x3D;gcd(x-1,N)&gt;1,那么其中一个因数p&#x3D;y， 另一个因数为N&#x2F;y,如果不满足条件，返回步骤2，重新选择数字g</span><br></pre></td></tr></table></figure>
+      
+       <hr><span style="font-style: italic;color: gray;"> 转载请注明来源，欢迎对文章中的引用来源进行考证，欢迎指出任何有错误或不够清晰的表达。可以在下面评论区评论，也可以邮件至 1259742453@qq.com </span>
+    </div>
+</article>
+
+
+<p>
+    <a  class="dashang" onclick="dashangToggle()">💰</a>
+</p>
+
+
+
+
+
+
+    
+
+
+
+
+    </div>
+    <div class="copyright">
+        <p class="footer-entry">
+    ©2016-2020 weichujian
+</p>
+<p class="footer-entry">Built with <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/yelog/hexo-theme-3-hexo" target="_blank">3-hexo</a> theme</p>
+
+    </div>
+    <div class="full-toc">
+        <button class="full" data-title="切换全屏 快捷键 s"><span class="min "></span></button>
+<a class="" id="rocket" ></a>
+
+    </div>
+</div>
+
+<div class="hide_box" onclick="dashangToggle()"></div>
+<div class="shang_box">
+    <a class="shang_close"  onclick="dashangToggle()">×</a>
+    <div class="shang_tit">
+        <p>Help us with donation</p>
+    </div>
+    <div class="shang_payimg">
+        <div class="pay_img">
+            <img src="/img/alipay.jpg" class="alipay" title="扫码支持">
+            <img src="/img/weixin.jpg" class="weixin" title="扫码支持">
+        </div>
+    </div>
+    <div class="shang_payselect">
+        <span><label><input type="radio" name="pay" checked value="alipay">alipay</label></span><span><label><input type="radio" name="pay" value="weixin">weixin</label></span>
+    </div>
+</div>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/z16.model.json"},"display":{"position":"right","width":250,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+<script src="/js/jquery.pjax.js?v=1.1.0" ></script>
+
+<script src="/js/script.js?v=1.1.0" ></script>
+<script>
+    var img_resize = 'default';
+    function initArticle() {
+        /*渲染对应的表格样式*/
+        
+            $("#post .pjax table").addClass("green_title");
+        
+
+        /*渲染打赏样式*/
+        
+        $("input[name=pay]").on("click", function () {
+            if($("input[name=pay]:checked").val()=="weixin"){
+                $(".shang_box .shang_payimg .pay_img").addClass("weixin_img");
+            } else {
+                $(".shang_box .shang_payimg .pay_img").removeClass("weixin_img");
+            }
+        })
+        
+
+        /*高亮代码块行号*/
+        
+
+        /*访问数量*/
+        
+        $.getScript("//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js");
+        
+
+        /*代码高亮，行号对齐*/
+        $('.pre-numbering').css('line-height',$('.has-numbering').css('line-height'));
+
+        
+        
+    }
+
+    /*打赏页面隐藏与展示*/
+    
+    function dashangToggle() {
+        $(".shang_box").fadeToggle();
+        $(".hide_box").fadeToggle();
+    }
+    
+
+</script>
+
+<!--加入行号的高亮代码块样式-->
+
+<!--自定义样式设置-->
+<style>
+    
+    
+    .nav {
+        width: 542px;
+    }
+    .nav.fullscreen {
+        margin-left: -542px;
+    }
+    .nav-left {
+        width: 120px;
+    }
+    
+    
+    @media screen and (max-width: 1468px) {
+        .nav {
+            width: 492px;
+        }
+        .nav.fullscreen {
+            margin-left: -492px;
+        }
+        .nav-left {
+            width: 100px;
+        }
+    }
+    
+    
+    @media screen and (max-width: 1024px) {
+        .nav {
+            width: 492px;
+            margin-left: -492px
+        }
+        .nav.fullscreen {
+            margin-left: 0;
+        }
+    }
+    
+    @media screen and (max-width: 426px) {
+        .nav {
+            width: 100%;
+        }
+        .nav-left {
+            width: 100%;
+        }
+    }
+    
+    
+    .nav-right .title-list nav a .post-title, .nav-right .title-list #local-search-result a .post-title {
+        color: #383636;
+    }
+    
+    
+    .nav-right .title-list nav a .post-date, .nav-right .title-list #local-search-result a .post-date {
+        color: #5e5e5f;
+    }
+    
+    
+    .nav-right nav a.hover, #local-search-result a.hover{
+        background-color: #e2e0e0;
+    }
+    
+    
+
+    /*列表样式*/
+    
+
+    /* 背景图样式 */
+    
+    
+
+
+    /*引用块样式*/
+    
+
+    /*文章列表背景图*/
+    
+
+    
+</style>
+
+
+
+
+
+
+
+</html>

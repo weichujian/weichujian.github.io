@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript" src="love.js"></script>
+</head>
+<head>
+  <meta charset="utf-8">
+  <title>Ecc椭圆曲线基础 | 人生若只如初见</title>
+  <meta name="keywords" content="">
+  <meta name="description" content="Ecc椭圆曲线基础 | 人生若只如初见">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="RSA的基本内容(如果对RSA很了解的话，可以跳过这部分）RSA的常用参数：p,q,n,e,d,phi,c,m p,q为两个大素数 n&#x3D;p*q e*d ≡1 (mod n) c&#x3D;m^e mod n 和 m&#x3D;c^d mod n ，c和m分别代表密文与明文RSA签名 1234 1、RSA签名使用与加密相同的方式，不过参数交换，使用私钥签发，公钥接收(原因：加密是为了防止中间人获取你的内容，签名是为了让">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RSA-crt签名问题">
+<meta property="og:url" content="http://yoursite.com/2021/05/24/RSA-crt%E7%AD%BE%E5%90%8D%E9%97%AE%E9%A2%98/index.html">
+<meta property="og:site_name" content="人生若只如初见">
+<meta property="og:description" content="RSA的基本内容(如果对RSA很了解的话，可以跳过这部分）RSA的常用参数：p,q,n,e,d,phi,c,m p,q为两个大素数 n&#x3D;p*q e*d ≡1 (mod n) c&#x3D;m^e mod n 和 m&#x3D;c^d mod n ，c和m分别代表密文与明文RSA签名 1234 1、RSA签名使用与加密相同的方式，不过参数交换，使用私钥签发，公钥接收(原因：加密是为了防止中间人获取你的内容，签名是为了让">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://p4.ssl.qhimg.com/t012431e5c937143505.png">
+<meta property="og:image" content="https://p0.ssl.qhimg.com/t012963a47a80f4cbac.png">
+<meta property="og:image" content="https://p5.ssl.qhimg.com/t0166c3f22bd3cb65e7.png">
+<meta property="article:published_time" content="2021-05-24T04:02:00.000Z">
+<meta property="article:modified_time" content="2021-05-24T04:15:49.573Z">
+<meta property="article:author" content="人生若只如初见">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://p4.ssl.qhimg.com/t012431e5c937143505.png">
+
+
+<link rel="icon" href="/img/avatar.jpg">
+
+<link href="/css/style.css?v=1.1.0" rel="stylesheet">
+
+<link href="/css/hl_theme/atom-light.css?v=1.1.0" rel="stylesheet">
+
+<link href="//cdn.jsdelivr.net/npm/animate.css@4.1.0/animate.min.css" rel="stylesheet">
+
+<script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script src="/js/titleTip.js?v=1.1.0" ></script>
+
+<script src="//cdn.jsdelivr.net/npm/highlightjs@9.16.2/highlight.pack.min.js"></script>
+<script>
+    hljs.initHighlightingOnLoad();
+</script>
+
+<script src="//cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js"></script>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/jquery.cookie@1.4.1/jquery.cookie.min.js" ></script>
+
+<script src="/js/iconfont.js?v=1.1.0" ></script>
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+<div style="display: none">
+  <input class="theme_disqus_on" value="false">
+  <input class="theme_preload_comment" value="">
+  <input class="theme_blog_path" value="">
+  <input id="theme_shortcut" value="true" />
+</div>
+
+
+<body>
+<aside class="nav">
+    <div class="nav-left">
+        <a href="/" class="avatar_target">
+    <img class="avatar" src="/img/avatar.jpg" />
+</a>
+<div class="author">
+    <span>人生若只如初见</span>
+</div>
+
+<div class="icon">
+    
+        
+    
+        
+        <a title="github" href="https://github.com/weichujian" target="_blank">
+            
+                <svg class="iconfont-svg" aria-hidden="true">
+                    <use xlink:href="#icon-github"></use>
+                </svg>
+            
+        </a>
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+        <a title="csdn" href="https://blog.csdn.net/weixin_44159598" target="_blank">
+            
+                <svg class="iconfont-svg" aria-hidden="true">
+                    <use xlink:href="#icon-csdn"></use>
+                </svg>
+            
+        </a>
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+</div>
+
+
+
+
+<ul>
+    <li><div class="all active" data-rel="All">All<small>(20)</small></div></li>
+    
+        
+            
+            <li><div data-rel="ctf">ctf<small>(2)</small></div>
+                
+            </li>
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+            <li><div data-rel="密码学"><i class="fold iconfont icon-right"></i>密码学<small>(18)</small></div>
+                
+                    <ul class="sub hide">
+                        
+                        <li><div data-rel="ECC">ECC<small>(1)</small></div>
+                            
+                        </li>
+                            
+                        <li><div data-rel="rsa">rsa<small>(8)</small></div>
+                            
+                        </li>
+                            
+                        <li><div data-rel="填充方式">填充方式<small>(1)</small></div>
+                            
+                        </li>
+                            
+                        <li><div data-rel="算法">算法<small>(1)</small></div>
+                            
+                        </li>
+                            
+                        <li><div data-rel="编码">编码<small>(4)</small></div>
+                            
+                        </li>
+                            
+                        <li><div data-rel="随机数">随机数<small>(1)</small></div>
+                            
+                        </li>
+                            
+                    </ul>
+                
+            </li>
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+</ul>
+<div class="left-bottom">
+    <div class="menus">
+    
+    
+    
+    </div>
+    <div><a class="about  hasFriend  site_url"  href="/about">About</a><a style="width: 50%"  class="friends">Friends</a></div>
+</div>
+<input type="hidden" id="yelog_site_posts_number" value="20">
+
+<div style="display: none">
+    <span id="busuanzi_value_site_uv"></span>
+    <span id="busuanzi_value_site_pv"></span>
+</div>
+
+    </div>
+    <div class="nav-right">
+        <div class="friends-area">
+    <div class="friends-title">
+        Links
+        <i class="iconfont icon-left"></i>
+    </div>
+    <div class="friends-content">
+        <ul>
+            
+            <li><a target="_blank" href="http://yelog.org/">叶落阁</a></li>
+            
+            <li><a target="_blank" href="https://r0co.top/">r0co</a></li>
+            
+            <li><a target="_blank" href="http://www.stao.site">stao</a></li>
+            
+        </ul>
+    </div>
+</div>
+        <div class="title-list">
+    <div class="right-top">
+        <div id="default-panel">
+            <i class="iconfont icon-search" data-title="搜索 快捷键 i"></i>
+            <div class="right-title">All</div>
+            <i class="iconfont icon-file-tree" data-title="切换到大纲视图 快捷键 w"></i>
+        </div>
+        <div id="search-panel">
+            <i class="iconfont icon-left" data-title="返回"></i>
+            <input id="local-search-input" />
+            <label class="border-line" for="input"></label>
+            <i class="iconfont icon-case-sensitive" data-title="大小写敏感"></i>
+            <i class="iconfont icon-tag" data-title="标签"></i>
+        </div>
+        <div id="outline-panel" style="display: none">
+            <div class="right-title">大纲</div>
+            <i class="iconfont icon-list" data-title="切换到文章列表"></i>
+        </div>
+    </div>
+
+    <div class="tags-list">
+    <input id="tag-search" />
+    <div class="tag-wrapper">
+        
+    </div>
+
+</div>
+
+    
+    <nav id="title-list-nav">
+        
+        <a  class="All 密码学 rsa "
+           href="/2021/05/24/RSA-crt%E7%AD%BE%E5%90%8D%E9%97%AE%E9%A2%98/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="RSA-crt签名问题">RSA-crt签名问题</span>
+            <span class="post-date" title="2021-05-24 12:02:00">2021/05/24</span>
+        </a>
+        
+        <a  class="All 密码学 "
+           href="/2021/05/24/python%E5%AE%9E%E7%8E%B0des%E4%B8%8ERSA/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="python实现des与RSA">python实现des与RSA</span>
+            <span class="post-date" title="2021-05-24 11:50:00">2021/05/24</span>
+        </a>
+        
+        <a  class="All 密码学 "
+           href="/2021/03/17/rc4%E7%AC%94%E8%AE%B0/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="rc4笔记">rc4笔记</span>
+            <span class="post-date" title="2021-03-17 16:00:00">2021/03/17</span>
+        </a>
+        
+        <a  class="All 密码学 填充方式 "
+           href="/2020/09/24/%E5%88%86%E7%BB%84%E5%8A%A0%E5%AF%86%E7%9A%84padding/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="分组加密的padding">分组加密的padding</span>
+            <span class="post-date" title="2020-09-24 19:55:00">2020/09/24</span>
+        </a>
+        
+        <a  class="All 密码学 rsa "
+           href="/2020/09/06/RsaLSBOrcalePadding/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="RsaLsbOrcalePadding">RsaLsbOrcalePadding</span>
+            <span class="post-date" title="2020-09-06 09:23:00">2020/09/06</span>
+        </a>
+        
+        <a  class="All ctf "
+           href="/2020/06/24/%E7%BD%91%E9%BC%8E%E6%9D%AF2020%E9%9D%92%E9%BE%99%E7%BB%84crypto/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="网鼎杯2020青龙组crypto">网鼎杯2020青龙组crypto</span>
+            <span class="post-date" title="2020-06-24 09:06:00">2020/06/24</span>
+        </a>
+        
+        <a  class="All 密码学 rsa "
+           href="/2020/06/23/rsa%E5%BD%93e-2%E4%B8%94%E4%B8%8D%E4%BA%92%E7%B4%A0%E6%97%B6%E5%A4%84%E7%90%86%E6%96%B9%E5%BC%8F/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="rsa当e=2且不互素时处理方式">rsa当e=2且不互素时处理方式</span>
+            <span class="post-date" title="2020-06-23 18:10:00">2020/06/23</span>
+        </a>
+        
+        <a  class="All 密码学 rsa "
+           href="/2020/06/01/%E5%B0%86CRT-%E4%B8%AD%E5%9B%BD%E5%89%A9%E4%BD%99%E5%AE%9A%E7%90%86-%E4%B8%8ERSA%E7%BB%93%E5%90%88/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="将CRT(中国剩余定理)与RSA结合">将CRT(中国剩余定理)与RSA结合</span>
+            <span class="post-date" title="2020-06-01 09:00:00">2020/06/01</span>
+        </a>
+        
+        <a  class="All ctf "
+           href="/2020/05/29/MRctf2020%E5%AF%86%E7%A0%81/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="MRctf2020密码">MRctf2020密码</span>
+            <span class="post-date" title="2020-05-29 11:35:00">2020/05/29</span>
+        </a>
+        
+        <a  class="All 密码学 rsa "
+           href="/2020/05/28/rsa-Factor-Attack-%E5%8F%8A%E5%B8%B8%E7%94%A8%E8%84%9A%E6%9C%AC/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="RSA  Factor Attack 及常用脚本">RSA  Factor Attack 及常用脚本</span>
+            <span class="post-date" title="2020-05-28 22:31:00">2020/05/28</span>
+        </a>
+        
+        <a  class="All 密码学 算法 "
+           href="/2020/05/28/%E7%BA%A2%E9%BB%91%E6%A0%91%E7%9A%84%E5%88%A0%E9%99%A4%E5%92%8C%E5%8F%98%E8%89%B2/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="红黑树的删除和变色">红黑树的删除和变色</span>
+            <span class="post-date" title="2020-05-28 19:02:00">2020/05/28</span>
+        </a>
+        
+        <a  class="All 密码学 rsa "
+           href="/2020/05/28/rsa%E5%B7%B2%E7%9F%A5e-d%E5%88%86%E8%A7%A3N/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="rsa已知e*d分解N">rsa已知e*d分解N</span>
+            <span class="post-date" title="2020-05-28 18:30:00">2020/05/28</span>
+        </a>
+        
+        <a  class="All 密码学 随机数 "
+           href="/2020/05/28/lcg%E7%BA%BF%E6%80%A7%E5%90%8C%E4%BD%99%E9%9A%8F%E6%9C%BA%E6%95%B0%E7%94%9F%E6%88%90%E5%99%A8/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="lcg线性同余随机数生成器">lcg线性同余随机数生成器</span>
+            <span class="post-date" title="2020-05-28 09:49:00">2020/05/28</span>
+        </a>
+        
+        <a  class="All 密码学 ECC "
+           href="/2020/05/27/Ecc%E6%A4%AD%E5%9C%86%E6%9B%B2%E7%BA%BF%E5%9F%BA%E7%A1%80/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="Ecc椭圆曲线基础">Ecc椭圆曲线基础</span>
+            <span class="post-date" title="2020-05-27 18:16:00">2020/05/27</span>
+        </a>
+        
+        <a  class="All 密码学 编码 "
+           href="/2020/05/27/Unicode%E7%BC%96%E7%A0%81%E8%A1%8D%E7%94%9F%E5%87%BA%E7%9A%84%E7%BC%96%E7%A0%81%E6%96%B9%E6%A1%88/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="Unicode编码衍生出的编码方案">Unicode编码衍生出的编码方案</span>
+            <span class="post-date" title="2020-05-27 18:11:00">2020/05/27</span>
+        </a>
+        
+        <a  class="All 密码学 编码 "
+           href="/2020/05/27/%E5%AF%86%E7%A0%81%E5%AD%A6%E7%BC%96%E7%A0%81-%E4%B8%89-Unicode%E7%BC%96%E7%A0%81/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="密码学编码(三)Unicode编码">密码学编码(三)Unicode编码</span>
+            <span class="post-date" title="2020-05-27 18:01:00">2020/05/27</span>
+        </a>
+        
+        <a  class="All 密码学 编码 "
+           href="/2020/05/27/%E5%AF%86%E7%A0%81%E5%AD%A6%E7%BC%96%E7%A0%81-%E4%B8%80-ASCII%E7%BC%96%E7%A0%81/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="密码学编码(一)ASCII编码">密码学编码(一)ASCII编码</span>
+            <span class="post-date" title="2020-05-27 17:56:00">2020/05/27</span>
+        </a>
+        
+        <a  class="All 密码学 编码 "
+           href="/2020/05/27/%E5%AF%86%E7%A0%81%E5%AD%A6%E7%BC%96%E7%A0%81-%E4%BA%8C-base%E7%BC%96%E7%A0%81/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="密码学编码(二)base编码">密码学编码(二)base编码</span>
+            <span class="post-date" title="2020-05-27 15:23:00">2020/05/27</span>
+        </a>
+        
+        <a  class="All 密码学 rsa "
+           href="/2020/05/27/rsa%E5%B7%B2%E7%9F%A5%E9%AB%98%E4%BD%8D%E6%94%BB%E5%87%BB1/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="rsa已知高位攻击">rsa已知高位攻击</span>
+            <span class="post-date" title="2020-05-27 11:54:00">2020/05/27</span>
+        </a>
+        
+        <a  class="All 密码学 rsa "
+           href="/2020/05/27/rsa%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0-1/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="rsa基础学习">rsa基础学习</span>
+            <span class="post-date" title="2020-05-27 11:46:00">2020/05/27</span>
+        </a>
+        
+        <div id="no-item-tips">
+
+        </div>
+    </nav>
+    <div id="outline-list">
+    </div>
+</div>
+    </div>
+    <div class="hide-list">
+        <div class="semicircle" data-title="切换全屏 快捷键 s">
+            <div class="brackets first"><</div>
+            <div class="brackets">&gt;</div>
+        </div>
+    </div>
+</aside>
+<div id="post">
+    <div class="pjax">
+        <article id="post-Ecc椭圆曲线基础" class="article article-type-post" itemscope itemprop="blogPost">
+    
+        <h1 class="article-title">Ecc椭圆曲线基础</h1>
+    
+    <div class="article-meta">
+        
+        
+        
+        <span class="book">
+            <i class="iconfont icon-category"></i>
+            
+            <a  data-rel="密码学">密码学</a> > 
+            
+            <a  data-rel="ECC">ECC</a>
+            
+        </span>
+        
+        
+    </div>
+    <div class="article-meta">
+        
+            Created At : <time class="date" title='Updated At: 2020-10-20 10:36:02'>2020-05-27 18:16</time>
+        
+    </div>
+    <div class="article-meta">
+        
+        
+        <span id="busuanzi_container_page_pv">
+            Views 👀 :<span id="busuanzi_value_page_pv">
+                <span class="count-comment">
+                    <span class="spinner">
+                      <div class="cube1"></div>
+                      <div class="cube2"></div>
+                    </span>
+                </span>
+            </span>
+        </span>
+        
+        
+    </div>
+    
+    <div class="toc-ref">
+    
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#椭圆曲线乘法"><span class="toc-text">椭圆曲线乘法</span></a></li></ol>
+    
+<style>
+    .left-col .switch-btn,
+    .left-col .switch-area {
+        display: none;
+    }
+    .toc-level-3 i,
+    .toc-level-3 ol {
+        display: none !important;
+    }
+</style>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <ul>
+<li>一般，椭圆曲线可以用以下二元三阶方程的形式来表示：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">y² &#x3D; x³ + ax + b，其中a、b为系数。</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>它大概的几何形状如下图：</li>
+</ul>
+<p><img src="/images/pasted-14.png" alt=""></p>
+<ul>
+<li>而本文要介绍的加法和乘法，就是基于这样一个奇怪的几何图形来做到的。</li>
+<li>椭圆曲线加法（非有限域）：在椭圆曲线上取一点P(Xp,Yp)，再取一点Q(Xq,Yq)，连接P、Q两点作一条直线，这条直线将在椭圆曲线上交于第三点G，过G点作垂直于X轴的直线，将过椭圆曲线另一点R（一般是关于X轴对称的点），R点则被定义为P+Q的结果，既P+Q=R：</li>
+</ul>
+<p><img src="/images/pasted-15.png" alt=""></p>
+<ul>
+<li>当P=Q的情况下，直线将是椭圆曲线在P（Q）点上的切线，而G点是这条切线和曲线的另一个交点，同样，P+Q=R</li>
+</ul>
+<p><img src="/images/pasted-16.png" alt=""></p>
+<ul>
+<li>通过上述的图片和文字描述，已经在几何图形上给出了椭圆曲线加法的定义，可是如果要公式化，该如何快速计算呢？</li>
+<li>这里只提供快速计算公式，不提供证明，证明可以自己再去解方程组推导一下：</li>
+<li>计算P+Q=R</li>
+<li>当P！=Q时，两点纵坐标相减的值与横坐标相减的值就是直线的斜率：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">λ &#x3D; (Yq - Yp)&#x2F;(Xq - Xp)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>当P=Q，计算过P（Q）点切线的斜率，既椭圆曲线公式两边求导相除：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">λ &#x3D; (3Xp² + a)&#x2F;2Yp</span><br></pre></td></tr></table></figure>
+<ul>
+<li>斜率计算之后，对点R的坐标进行计算，公式如下：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Xr &#x3D; (λ² - Xp - Xq)</span><br><span class="line">Yr &#x3D; (λ(Xp - Xr) - Yp)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>通过上述公式，可以快速计算椭圆曲线上任意两点的加法和，这里给出加法实现的python代码：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">if P &#x3D;&#x3D; Q:</span><br><span class="line">aaa&#x3D;(3pow(P[0],2) + a)</span><br><span class="line">bbb&#x3D;(2G[1])</span><br><span class="line">k&#x3D;(aaa&#x2F;bbb)</span><br><span class="line">else:</span><br><span class="line">aaa&#x3D;(Q[1]-P[1])</span><br><span class="line">bbb&#x3D;(Q[0]-P[0])</span><br><span class="line">k&#x3D;(aaa&#x2F;bbb)</span><br><span class="line"></span><br><span class="line">Rx&#x3D;(pow(k,2)-P[0] - Q[0])</span><br><span class="line">Ry&#x3D;(k*(P[0]-Rx) - P[1])</span><br><span class="line">椭圆曲线加法（有限域）</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>实数范围上光滑的椭圆曲线在密码学应用上并不合适，需要进行有限域下的离散化操作才能使用。</li>
+</ul>
+<p><img src="/images/pasted-18.png" alt=""></p>
+<ul>
+<li>现在将上述的椭圆曲线加法计算公式适当修改，以适应有限域下的计算：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">当P！&#x3D;Q时，两点纵坐标相减的值与横坐标相减的值需要与p进行取余操作：</span><br><span class="line">	λ &#x3D; (Yq - Yp)&#x2F;(Xq - Xp) mod p</span><br><span class="line"></span><br><span class="line">当P&#x3D;Q，计算过P（Q）点切线的斜率，既椭圆曲线公式两边求导相除，结果也需要与p进行取余操作：</span><br><span class="line"></span><br><span class="line">	λ &#x3D; (3Xp² + a)&#x2F;2Yp mod p</span><br><span class="line"></span><br><span class="line">斜率计算之后，对点R的坐标进行计算，公式如下：</span><br><span class="line"></span><br><span class="line">	Xr &#x3D; (λ² - Xp - Xq) mod p</span><br><span class="line"></span><br><span class="line">	Yr &#x3D; (λ(Xp - Xr) - Yp) mod p</span><br><span class="line"></span><br><span class="line">通过比较，有限域下的计算只是对结果进行了取余操作，上述公式看起来已经解决了有限域下的椭圆曲线加法。</span><br><span class="line"></span><br><span class="line">但是如果在编写代码，计算实际的例子时，有很大可能会得到错误的结果，其根源在于</span><br><span class="line"></span><br><span class="line">	λ &#x3D; (Yq - Yp)&#x2F;(Xq - Xp) mod p或λ &#x3D; (3Xp² + a)&#x2F;2Yp mod p</span><br><span class="line">    </span><br><span class="line">在进行取余计算之前，除数和被除数之前可能并不是一个整除的关系。如：1&#x2F;4 mod 23，如果直接进行处理，将会得到结果0。</span><br><span class="line"></span><br><span class="line">但是在分数求模计算中，是如下定义的：</span><br><span class="line"></span><br><span class="line">	计算a&#x2F;b(mod n)</span><br><span class="line"></span><br><span class="line">	a&#x2F;b (mod n)&#x3D;a*b^-1(mod n)</span><br><span class="line"></span><br><span class="line">计算1&#x2F;b mod n&#x3D;b^(-1) mod n</span><br><span class="line">就是求y，满足：</span><br><span class="line"></span><br><span class="line">	yb &#x3D; 1 mod n</span><br><span class="line">	y是有限域F(n)上x的乘法逆元素</span><br><span class="line"></span><br><span class="line">简单点说，假设需要求上述的1&#x2F;4 mod 23，可以转化为1*4（-1次方） mod 23，又可以转化为1(4和23的乘法逆元) mod 23。</span><br><span class="line">而计算乘法逆元，可以通过拓展欧几里得计算得到，这里对拓展欧几里得不作展开，只提供一个简单算法流程描述：</span><br><span class="line">		ExtendedEuclid(d,f) </span><br><span class="line">	1 （X1,X2,X3):&#x3D;(1,0,f) </span><br><span class="line">	2   (Y1,Y2,Y3):&#x3D;(0,1,d) </span><br><span class="line">	3  if (Y3&#x3D;0) then return  d&#39;&#x3D;null&#x2F;&#x2F;无逆元 </span><br><span class="line">	4  if (Y3&#x3D;1) then return  d&#39;&#x3D;Y2  &#x2F;&#x2F;Y2为逆元 </span><br><span class="line">	5  Q:&#x3D;X3 div Y3 </span><br><span class="line">	6  (T1,T2,T3):&#x3D;(X1-Q*Y1,X2-Q*Y2,X3-Q*Y3) </span><br><span class="line">	7 （X1,X2,X3):&#x3D;(Y1,Y2,Y3) </span><br><span class="line">	8  (Y1,Y2,Y3):&#x3D;(T1,T2,T3) </span><br><span class="line">	9  goto 3</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>得到乘法逆元后，椭圆曲线上的加法运算计算就简单了，实现Python代码如下:</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line">#coding:utf-8</span><br><span class="line">#欧几里得算法求最大公约数</span><br><span class="line">def get_gcd(a, b):</span><br><span class="line">    k &#x3D; a &#x2F;&#x2F; b</span><br><span class="line">    remainder &#x3D; a % b</span><br><span class="line">    while remainder !&#x3D; 0:</span><br><span class="line">        a &#x3D; b </span><br><span class="line">        b &#x3D; remainder</span><br><span class="line">        k &#x3D; a &#x2F;&#x2F; b</span><br><span class="line">        remainder &#x3D; a % b</span><br><span class="line">    return b</span><br><span class="line">    </span><br><span class="line">#改进欧几里得算法求线性方程的x与y</span><br><span class="line">def get_(a, b):</span><br><span class="line">    if b &#x3D;&#x3D; 0:</span><br><span class="line">        return 1, 0</span><br><span class="line">    else:</span><br><span class="line">        k &#x3D; a &#x2F;&#x2F; b</span><br><span class="line">        remainder &#x3D; a % b       </span><br><span class="line">        x1, y1 &#x3D; get_(b, remainder)</span><br><span class="line">        x, y &#x3D; y1, x1 - k * y1          </span><br><span class="line">    return x, y</span><br><span class="line"></span><br><span class="line">#返回乘法逆元</span><br><span class="line">def yunsle(a,b):</span><br><span class="line">    #将初始b的绝对值进行保存</span><br><span class="line">    if b &lt; 0:</span><br><span class="line">        m &#x3D; abs(b)</span><br><span class="line">    else:</span><br><span class="line">    m &#x3D; b</span><br><span class="line">    flag &#x3D; get_gcd(a, b)</span><br><span class="line"></span><br><span class="line">    #判断最大公约数是否为1，若不是则没有逆元</span><br><span class="line">    if flag &#x3D;&#x3D; 1:   </span><br><span class="line">    x, y &#x3D; get_(a, b)   </span><br><span class="line">    x0 &#x3D; x % m #对于Python &#39;%&#39;就是求模运算，因此不需要&#39;+m&#39;</span><br><span class="line">    #print(x0) #x0就是所求的逆元</span><br><span class="line">        return x0</span><br><span class="line">    else:</span><br><span class="line">    print(&quot;Do not have!&quot;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if P &#x3D;&#x3D; Q:</span><br><span class="line">        aaa&#x3D;(3*pow(P[0],2) + a)</span><br><span class="line">        bbb&#x3D;(2*P[1])</span><br><span class="line">        if aaa % bbb !&#x3D;0:</span><br><span class="line">            val&#x3D;yunsle(bbb,mod)</span><br><span class="line">            y&#x3D;(aaa*val) % mod</span><br><span class="line">        else:</span><br><span class="line">            y&#x3D;(aaa&#x2F;bbb) % mod </span><br><span class="line">else:</span><br><span class="line">        aaa&#x3D;(Q[1]-P[1])</span><br><span class="line">        bbb&#x3D;(Q[0]-P[0])</span><br><span class="line">        if aaa % bbb !&#x3D;0:</span><br><span class="line">            val&#x3D;yunsle(bbb,mod)</span><br><span class="line">            y&#x3D;(aaa*val) % mod</span><br><span class="line">        else:</span><br><span class="line">            y&#x3D;(aaa&#x2F;bbb) % mod </span><br><span class="line"></span><br><span class="line">Rx&#x3D;(pow(k,2)-P[0] - Q[0])  % mod</span><br><span class="line">Ry&#x3D;(k*(P[0]-Rx) - P[1])  % mod</span><br></pre></td></tr></table></figure>
+
+<h2 id="椭圆曲线乘法"><a href="#椭圆曲线乘法" class="headerlink" title="椭圆曲线乘法"></a>椭圆曲线乘法</h2><ul>
+<li><p>简单介绍完椭圆曲线上定义的加法运算，椭圆曲线上的乘法运算就比较简单了，因为乘法可以退化为加法运算，就像算数上的1*3等价与1+1+1。</p>
+</li>
+<li><p>假设我们需要求2P，则可以化简为P+P=2P</p>
+</li>
+<li><p>同理，当我们需要求3P时，可以化简为P+2P=3P，其中2P=P+P</p>
+</li>
+<li><p>最后，我们可以得到规律，当求nP时（n为任意正整数），P+(n-1)P=nP，其中(n-1)P=P+(n-2)P</p>
+</li>
+<li><p>这样，通过上述介绍的椭圆曲线加法公式，完全可以进行椭圆曲线的乘法计算</p>
+</li>
+<li><p>以本文开头的题目为例，给出Python代码实现：</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br></pre></td><td class="code"><pre><span class="line">#coding:utf-8</span><br><span class="line">#欧几里得算法求最大公约数</span><br><span class="line">def get_gcd(a, b):</span><br><span class="line">    k &#x3D; a &#x2F;&#x2F; b</span><br><span class="line">    remainder &#x3D; a % b</span><br><span class="line">    while remainder !&#x3D; 0:</span><br><span class="line">        a &#x3D; b </span><br><span class="line">        b &#x3D; remainder</span><br><span class="line">        k &#x3D; a &#x2F;&#x2F; b</span><br><span class="line">        remainder &#x3D; a % b</span><br><span class="line">    return b</span><br><span class="line">    </span><br><span class="line">#改进欧几里得算法求线性方程的x与y</span><br><span class="line">def get_(a, b):</span><br><span class="line">    if b &#x3D;&#x3D; 0:</span><br><span class="line">        return 1, 0</span><br><span class="line">    else:</span><br><span class="line">        k &#x3D; a &#x2F;&#x2F; b</span><br><span class="line">        remainder &#x3D; a % b       </span><br><span class="line">        x1, y1 &#x3D; get_(b, remainder)</span><br><span class="line">        x, y &#x3D; y1, x1 - k * y1          </span><br><span class="line">    return x, y</span><br><span class="line"></span><br><span class="line">#返回乘法逆元</span><br><span class="line">def yunsle(a,b):</span><br><span class="line">    #将初始b的绝对值进行保存</span><br><span class="line">    if b &lt; 0:</span><br><span class="line">        m &#x3D; abs(b)</span><br><span class="line">    else:</span><br><span class="line">    m &#x3D; b</span><br><span class="line">    flag &#x3D; get_gcd(a, b)</span><br><span class="line"></span><br><span class="line">    #判断最大公约数是否为1，若不是则没有逆元</span><br><span class="line">    if flag &#x3D;&#x3D; 1:   </span><br><span class="line">    x, y &#x3D; get_(a, b)   </span><br><span class="line">    x0 &#x3D; x % m #对于Python &#39;%&#39;就是求模运算，因此不需要&#39;+m&#39;</span><br><span class="line">    #print(x0) #x0就是所求的逆元</span><br><span class="line">        return x0</span><br><span class="line">    else:</span><br><span class="line">    print(&quot;Do not have!&quot;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">mod&#x3D;15424654874903</span><br><span class="line">#mod&#x3D;23</span><br><span class="line">a&#x3D;16546484</span><br><span class="line">#a&#x3D;1</span><br><span class="line">b&#x3D;4548674875</span><br><span class="line">#b&#x3D;1</span><br><span class="line">G&#x3D;[6478678675,5636379357093]</span><br><span class="line">#G&#x3D;[3,10]</span><br><span class="line">#次数</span><br><span class="line">k&#x3D;546768</span><br><span class="line">temp&#x3D;[6478678675,5636379357093]</span><br><span class="line">#temp&#x3D;[3,10]</span><br><span class="line">for i in range(0,k):</span><br><span class="line">    if i &#x3D;&#x3D; 0:</span><br><span class="line">        aaa&#x3D;(3*pow(G[0],2) + a)</span><br><span class="line">        bbb&#x3D;(2*G[1])</span><br><span class="line">        if aaa % bbb !&#x3D;0:</span><br><span class="line">            val&#x3D;yunsle(bbb,mod)</span><br><span class="line">            y&#x3D;(aaa*val) % mod</span><br><span class="line">        else:</span><br><span class="line">            y&#x3D;(aaa&#x2F;bbb) % mod</span><br><span class="line">    else:</span><br><span class="line">        aaa&#x3D;(temp[1]-G[1])</span><br><span class="line">        bbb&#x3D;(temp[0]-G[0])</span><br><span class="line">        if aaa % bbb !&#x3D;0:</span><br><span class="line">            val&#x3D;yunsle(bbb,mod)</span><br><span class="line">            y&#x3D;(aaa*val) % mod</span><br><span class="line">        else:</span><br><span class="line">            y&#x3D;(aaa&#x2F;bbb) % mod</span><br><span class="line"></span><br><span class="line">    #print y</span><br><span class="line">    Rx&#x3D;(pow(y,2)-G[0] - temp[0]) % mod</span><br><span class="line">    Ry&#x3D;(y*(G[0]-Rx) - G[1]) % mod</span><br><span class="line">    temp&#x3D;[Rx,Ry]</span><br><span class="line">    #print temp</span><br><span class="line"></span><br><span class="line">print temp</span><br></pre></td></tr></table></figure>
+<ul>
+<li>参考文献：</li>
+</ul>
+<p><a href="http://blog.51cto.com/11821908/2057726" target="_blank" rel="noopener">讲解了受限域的曲线下的加法实现计算</a></p>
+<p><a href="https://www.jianshu.com/p/2e6031ac3d50" target="_blank" rel="noopener">只讲解了无受限域下曲线的加法</a></p>
+<p><a href="https://wenku.baidu.com/view/6f2879cca1c7aa00b52acb5f.html" target="_blank" rel="noopener">分数求模原理介绍</a></p>
+<p><a href="https://www.pediy.com/kssd/pediy06/pediy6014.htm" target="_blank" rel="noopener">看雪论坛上的详细介绍，提供了加法运算的验证集</a></p>
+<p><a href="https://blog.csdn.net/baidu_38271024/article/details/78881031" target="_blank" rel="noopener">乘法逆元求解的python实现</a></p>
+
+      
+       <hr><span style="font-style: italic;color: gray;"> 转载请注明来源，欢迎对文章中的引用来源进行考证，欢迎指出任何有错误或不够清晰的表达。可以在下面评论区评论，也可以邮件至 1259742453@qq.com </span>
+    </div>
+</article>
+
+
+<p>
+    <a  class="dashang" onclick="dashangToggle()">💰</a>
+</p>
+
+
+
+
+
+
+    
+
+
+
+
+    </div>
+    <div class="copyright">
+        <p class="footer-entry">
+    ©2016-2020 weichujian
+</p>
+<p class="footer-entry">Built with <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/yelog/hexo-theme-3-hexo" target="_blank">3-hexo</a> theme</p>
+
+    </div>
+    <div class="full-toc">
+        <button class="full" data-title="切换全屏 快捷键 s"><span class="min "></span></button>
+<a class="" id="rocket" ></a>
+
+    </div>
+</div>
+
+<div class="hide_box" onclick="dashangToggle()"></div>
+<div class="shang_box">
+    <a class="shang_close"  onclick="dashangToggle()">×</a>
+    <div class="shang_tit">
+        <p>Help us with donation</p>
+    </div>
+    <div class="shang_payimg">
+        <div class="pay_img">
+            <img src="/img/alipay.jpg" class="alipay" title="扫码支持">
+            <img src="/img/weixin.jpg" class="weixin" title="扫码支持">
+        </div>
+    </div>
+    <div class="shang_payselect">
+        <span><label><input type="radio" name="pay" checked value="alipay">alipay</label></span><span><label><input type="radio" name="pay" value="weixin">weixin</label></span>
+    </div>
+</div>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/z16.model.json"},"display":{"position":"right","width":250,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+<script src="/js/jquery.pjax.js?v=1.1.0" ></script>
+
+<script src="/js/script.js?v=1.1.0" ></script>
+<script>
+    var img_resize = 'default';
+    function initArticle() {
+        /*渲染对应的表格样式*/
+        
+            $("#post .pjax table").addClass("green_title");
+        
+
+        /*渲染打赏样式*/
+        
+        $("input[name=pay]").on("click", function () {
+            if($("input[name=pay]:checked").val()=="weixin"){
+                $(".shang_box .shang_payimg .pay_img").addClass("weixin_img");
+            } else {
+                $(".shang_box .shang_payimg .pay_img").removeClass("weixin_img");
+            }
+        })
+        
+
+        /*高亮代码块行号*/
+        
+
+        /*访问数量*/
+        
+        $.getScript("//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js");
+        
+
+        /*代码高亮，行号对齐*/
+        $('.pre-numbering').css('line-height',$('.has-numbering').css('line-height'));
+
+        
+        
+    }
+
+    /*打赏页面隐藏与展示*/
+    
+    function dashangToggle() {
+        $(".shang_box").fadeToggle();
+        $(".hide_box").fadeToggle();
+    }
+    
+
+</script>
+
+<!--加入行号的高亮代码块样式-->
+
+<!--自定义样式设置-->
+<style>
+    
+    
+    .nav {
+        width: 542px;
+    }
+    .nav.fullscreen {
+        margin-left: -542px;
+    }
+    .nav-left {
+        width: 120px;
+    }
+    
+    
+    @media screen and (max-width: 1468px) {
+        .nav {
+            width: 492px;
+        }
+        .nav.fullscreen {
+            margin-left: -492px;
+        }
+        .nav-left {
+            width: 100px;
+        }
+    }
+    
+    
+    @media screen and (max-width: 1024px) {
+        .nav {
+            width: 492px;
+            margin-left: -492px
+        }
+        .nav.fullscreen {
+            margin-left: 0;
+        }
+    }
+    
+    @media screen and (max-width: 426px) {
+        .nav {
+            width: 100%;
+        }
+        .nav-left {
+            width: 100%;
+        }
+    }
+    
+    
+    .nav-right .title-list nav a .post-title, .nav-right .title-list #local-search-result a .post-title {
+        color: #383636;
+    }
+    
+    
+    .nav-right .title-list nav a .post-date, .nav-right .title-list #local-search-result a .post-date {
+        color: #5e5e5f;
+    }
+    
+    
+    .nav-right nav a.hover, #local-search-result a.hover{
+        background-color: #e2e0e0;
+    }
+    
+    
+
+    /*列表样式*/
+    
+
+    /* 背景图样式 */
+    
+    
+
+
+    /*引用块样式*/
+    
+
+    /*文章列表背景图*/
+    
+
+    
+</style>
+
+
+
+
+
+
+
+</html>
